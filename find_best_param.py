@@ -66,10 +66,16 @@ if __name__ == "__main__":
         return -ps.average_result("result")[0]
     def create_runs(ps):
         ps.find_or_create_runs_upto(1, submitted_to=oacis.Host.find_by_name("localhost") )
-    other_params = {"p2": 0.3}
+    p2_list = [0.1,0.2,0.3,0.4,0.5]
+    finders = []
     w = oacis.OacisWatcher()
-    m = MaximumFinder( simulator=sim, in_key="p1", domain=(0.0,1.0), resolution=0.1, other_params=other_params, target=get_result, create_runs=create_runs, watcher=w )
-    m.start_searching()
+    for p2 in p2_list:
+        other_params = {"p2": p2}
+        m = MaximumFinder( simulator=sim, in_key="p1", domain=(0.0,1.0), resolution=0.1, other_params=other_params, target=get_result, create_runs=create_runs, watcher=w )
+        m.start_searching()
+        finders.append(m)
     w.loop()
-    print( "Best parameter: %s" % m.answer.v() )
+
+    for i in range(len(p2_list)):
+        print("Best parameter for p2=%f : %s" % (p2_list[i], finders[i].answer.v() ) )
 
